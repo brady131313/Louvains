@@ -209,7 +209,7 @@ def findCommunities(graph):
             break
     return vertexMap
 
-def getColors(mappings):
+def getColors(vertex):
     colors1 = [
         "#FFFFB300", 
         "#FF803E75", 
@@ -232,43 +232,44 @@ def getColors(mappings):
         (1, .5, 0)
     ]
 
-    mappings = [colors2[i % len(colors2)] for i in mappings]
-    return mappings
+    #mappings = [colors2[i % len(colors2)] for i in mappings]
+    return colors1[vertex % len(colors1)]
 
 def visualizeGraph(graph, mappings):
     G = nx.Graph()
-    edges = []
 
+    colors = []
+    for v1 in graph.adjacency:
+        G.add_node(v1)
+        colors.append(mappings[v1])
+
+    edges = []
     for v1 in graph.adjacency:
         neighbors = [e[0] for e in graph.neighbors(v1)]
         weights = [e[1] for e in graph.neighbors(v1)]
         for neighbor, weight in zip(neighbors, weights):
             edges.append((v1, neighbor, weight))
-
-    colors = getColors(mappings)
-    #cmap = cm.get_cmap('viridis')
-    #colors = cmap(colors)
-
+    
     G.add_weighted_edges_from(edges)
-    layout = nx.spring_layout(G)
+    layout = nx.spectral_layout(G)
 
     nx.draw_networkx(G, pos=layout, node_color=colors, node_size=200, alpha=0.75, with_labels=False)
     plt.show()
 
 def main():
-    graph = Graph().fromFile("karate.txt", 0)
+    graph = Graph().fromFile("schedule00.dat", 1)
     mappings = findCommunities(graph)
 
     maxCluster = max(mappings)
     print(len(set(mappings)))
     
-    '''
+    
     communities = set(mappings)
     for c in communities:
         vertcies = list(graph.adjacency.keys())
         cluster = filter(lambda x: mappings[x] == c, vertcies)
         print(f"Cluster: {c} = {list(cluster)}")
-    '''
+    
     
     visualizeGraph(graph, mappings)
 
