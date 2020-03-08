@@ -2,6 +2,7 @@ import random
 from operator import itemgetter
 import time
 import math
+import argparse
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -251,13 +252,13 @@ def visualizeGraph(graph, mappings):
             edges.append((v1, neighbor, weight))
     
     G.add_weighted_edges_from(edges)
-    layout = nx.spectral_layout(G)
+    layout = nx.spring_layout(G)
 
     nx.draw_networkx(G, pos=layout, node_color=colors, node_size=200, alpha=0.75, with_labels=False)
     plt.show()
 
-def main():
-    graph = Graph().fromFile("schedule00.dat", 1)
+def louvains(filename, offset):
+    graph = Graph().fromFile(filename, offset)
     mappings = findCommunities(graph)
 
     maxCluster = max(mappings)
@@ -274,7 +275,14 @@ def main():
     visualizeGraph(graph, mappings)
 
 
-if __name__ == "__main__":
-    main()
+parser = argparse.ArgumentParser()
+parser.add_argument("filename", help="graph to detect communities from", type=str)
+parser.add_argument("-O", dest="offset", default=0, action='store', type=int, help="offset for file")
+args = parser.parse_args()
+
+if not args.filename or len(args.filename) == 0:
+    print("Graph filename must be supplied")
+else:
+    louvains(args.filename, args.offset)
 
         
