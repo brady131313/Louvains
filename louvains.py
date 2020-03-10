@@ -248,6 +248,7 @@ def visualizeGraph(graph, mappings):
     for v1 in graph.adjacency:
         neighbors = [e[0] for e in graph.neighbors(v1)]
         weights = [e[1] for e in graph.neighbors(v1)]
+        
         for neighbor, weight in zip(neighbors, weights):
             edges.append((v1, neighbor, weight))
     
